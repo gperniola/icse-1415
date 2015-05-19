@@ -119,6 +119,8 @@
                    (shore-2-missionaries ?s2m)
                    (shore-2-cannibals ?s2c))
   (boat-can-hold ?limit)
+  (max-search-depth (level ?lvl))
+  (test (< ?num ?lvl))
   =>
   (bind ?max-missionaries (min ?s1m ?limit))
   (loop-for-count (?missionaries 0 ?max-missionaries)
@@ -142,6 +144,8 @@
                    (shore-2-missionaries ?s2m)
                    (shore-2-cannibals ?s2c))
   (boat-can-hold ?limit)
+  (max-search-depth (level ?lvl))
+  (test (< ?num ?lvl))
   =>
   (bind ?max-missionaries (min ?s2m ?limit))
   (loop-for-count (?missionaries 0 ?max-missionaries)
@@ -192,13 +196,13 @@
 =>
     (retract ?node1))
 
-(defrule CONSTRAINTS::max-depth-reached
-    (declare (auto-focus TRUE))
-    (max-search-depth (level ?lv))
-    ?node1 <- (status (search-depth ?lv))
-=>
-    (retract ?node1)
-    (printout t "fired" crlf))
+;;;(defrule CONSTRAINTS::max-depth-reached
+;;;    (declare (auto-focus TRUE))
+;;;    (max-search-depth (level ?lv))
+;;;    ?node1 <- (status (search-depth ?lv))
+;;;=>
+;;;    (retract ?node1)
+;;;    (printout t "fired" crlf))
 
 ;;;*********************************
 ;;;* FIND AND PRINT SOLUTION RULES *
@@ -217,3 +221,4 @@
     (printout t "sol found" crlf)
     (halt))
        
+
