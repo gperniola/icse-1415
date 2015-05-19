@@ -50,7 +50,9 @@
           (shore-1-cannibals ?*initial-cannibals*)
           (shore-2-cannibals 0)
           (boat-location shore-1)
-          (last-move "No move.")))
+          (last-move "No move."))
+          
+  (max-search-depth 10))
 
 (deffacts MAIN::boat-information
   (boat-can-hold 2))
@@ -90,14 +92,15 @@
 ;;;* FUNCTION AND RULE TO CHANGE SEARCH DEPTH  *
 ;;;*********************************************     
       
-(deffunction MAIN::increase-depth()
-  (bind ?*max-depth* (+ ?*max-depth* 10))
-  (printout t "changing depth.." crlf))
+;;;(deffunction MAIN::increase-depth()
+  ;;;(bind ?*max-depth* (+ ?*max-depth* 10))
+  ;;;(printout t "changing depth.." crlf))
 
 (defrule MAIN::change-depth
   (declare (salience -100))
+  ?depth <- (max-search-depth ?level)
   =>
-  (increase-depth))
+  (modify ?depth (+ ?level 10)))
   
 
 ;;;***********************
@@ -187,8 +190,8 @@
 
 (defrule CONSTRAINTS::max-depth-reached
     (declare (auto-focus TRUE))
-    ?d <- (?*max-depth*)
-    ?node1 <- (status (search-depth ?d))
+    (max-search-depth ?level)
+    ?node1 <- (status (search-depth ?level))
 =>
     (retract ?node1))
 
