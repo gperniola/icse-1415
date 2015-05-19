@@ -15,7 +15,7 @@
 ;;;======================================================
 
 (defmodule MAIN 
-  (export deftemplate status)
+  (export deftemplate status max-search-depth)
   (export defglobal initial-missionaries initial-cannibals))
 
 ;;;*************
@@ -35,6 +35,9 @@
    (slot boat-location (type SYMBOL) (allowed-values shore-1 shore-2))
    (slot last-move (type STRING)))
 
+(deftemplate MAIN::max-search-depth
+	(slot level (type INTEGER) (range 1 ?VARIABLE))) 
+
 ;;;*****************
 ;;;* INITIAL STATE *
 ;;;*****************
@@ -52,7 +55,7 @@
           (boat-location shore-1)
           (last-move "No move."))
           
-  (max-search-depth 10))
+  (max-search-depth (level 10)))
 
 (deffacts MAIN::boat-information
   (boat-can-hold 2))
@@ -98,9 +101,10 @@
 
 (defrule MAIN::change-depth
   (declare (salience -100))
-  ?depth <- (max-search-depth ?level)
+  ?depth <- (max-search-depth (level ?lv))
   =>
-  (modify ?depth (+ ?level 10)))
+  (modify ?depth (level (+ ?lv 10)))
+  (printout t "new max depth: " ?lv crlf))
   
 
 ;;;***********************
@@ -158,7 +162,7 @@
 ;;;******************************
 
 (defmodule CONSTRAINTS 
-  (import MAIN deftemplate status))
+  (import MAIN deftemplate status max-search-depth))
 
 (defrule CONSTRAINTS::cannibals-eat-missionaries 
   (declare (auto-focus TRUE))
@@ -190,10 +194,11 @@
 
 (defrule CONSTRAINTS::max-depth-reached
     (declare (auto-focus TRUE))
-    (max-search-depth ?level)
-    ?node1 <- (status (search-depth ?level))
+    (max-search-depth (level ?lv))
+    ?node1 <- (status (search-depth ?lv))
 =>
-    (retract ?node1))
+    (retract ?node1)
+    (printout t "fired" crlf))
 
 ;;;*********************************
 ;;;* FIND AND PRINT SOLUTION RULES *
@@ -212,4 +217,3 @@
     (printout t "sol found" crlf)
     (halt))
        
-
